@@ -13,7 +13,7 @@ from ..utils import (
 
 
 class TVN24IE(InfoExtractor):
-    _VALID_URL = r'https?://(?:(?:[^/]+)\.)?tvn24(?:bis)?\.pl/(?:[^/]+/)*(?P<id>[^/]+)'
+    _VALID_URL = r'https?://(?:(?:[^/]+)\.)?(?:toteraz|tvn24(?:bis)?)\.pl/(?:[^/]+/)*(?P<id>[^/]+)'
     _TESTS = [{
         'url': 'http://www.tvn24.pl/wiadomosci-z-kraju,3/oredzie-artura-andrusa,702428.html',
         'md5': 'fbdec753d7bc29d96036808275f2130c',
@@ -83,7 +83,10 @@ class TVN24IE(InfoExtractor):
                 share_params = extract_json('share-params', 'share params', fatal=False)
                 if share_params:
                     video_id = share_params['id']
-                else:
+                    if video_id == '[id]':
+                        # toteraz.pl videos have bogus share-params
+                        video_id = None
+                if video_id is None:
                     video_id = extract_value('video-id', 'video id')
                 try:
                     title = match.group('title')
